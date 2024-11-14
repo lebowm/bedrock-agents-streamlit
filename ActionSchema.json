@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "PortfolioCreatorAssistant API",
+    "title": "LegaleseAssistant API",
     "description": "API for creating a company portfolio, search company data, and send summarized emails",
     "version": "1.0.0"
   },

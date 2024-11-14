@@ -109,7 +109,7 @@ for index, chat in enumerate(reversed(st.session_state['history'])):
         st.image(circular_human_image, width=125)
     with col2_q:
         # Generate a unique key for each question text area
-        st.text_area("Q:", value=chat["question"], height=50, key=f"question_{index}", disabled=True)
+        st.text_area("Q:", value=chat["question"], height=100, key=f"question_{index}", disabled=True)
 
     # Creating columns for Answer
     col1_a, col2_a = st.columns([2, 10])
@@ -131,10 +131,10 @@ st.write("## Test Knowledge Base Prompts")
 
 # Creating a list of prompts for the Knowledge Base section
 knowledge_base_prompts = [
-    {"Prompt": "Give me a summary of financial market developments and open market operations in January 2023"},
-    {"Prompt": "Tell me the participants view on economic conditions and economic outlook"},
-    {"Prompt": "Provide any important information I should know about consumer inflation, or rising prices"},
-    {"Prompt": "Tell me about the Staff Review of the Economic & financial Situation"}
+    {"Prompt": "What are the powers of the mayor?"},
+    {"Prompt": "What is Title 1 of the Administrative Code?"},
+    {"Prompt": "What is the role of the California mayor?"},
+    {"Prompt": "What can you tell me about Brown v Board of education?"}
 ]
 
 # Displaying the Knowledge Base prompts as a table
@@ -145,9 +145,8 @@ st.write("## Test Action Group Prompts")
 
 # Creating a list of prompts for the Action Group section
 action_group_prompts = [
-    {"Prompt": "Create a portfolio with 3 companies in the real estate industry"},
-    {"Prompt": "Create a portfolio of 4 companies that are in the technology industry"},
-    {"Prompt": "Return me information on the company on TechStashNova Inc."}
+    {"Prompt": "Summarize Brown v Board of education"},
+    {"Prompt": "List 4 Titles from the NY Administrative Code"}
 ]
 
 # Displaying the Action Group prompts as a table

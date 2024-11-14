@@ -1,83 +1,83 @@
-AWSTemplateFormatVersion: '2010-09-09'
+AWSTemplateFormatVersion: "2010-09-09"
 Description: CloudFormation template to create an AWS Bedrock Agent resource and Lambda function.
 
 Resources:
   # IAM Managed Policy for CloudWatch Logs
   CloudWatchLogsPolicy:
-    Type: 'AWS::IAM::ManagedPolicy'
+    Type: "AWS::IAM::ManagedPolicy"
     Properties:
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Action:
-              - 'logs:CreateLogGroup'
-              - 'logs:CreateLogStream'
-              - 'logs:PutLogEvents'
+              - "logs:CreateLogGroup"
+              - "logs:CreateLogStream"
+              - "logs:PutLogEvents"
             Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*:*"
 
   # IAM Role for Lambda Function Execution
   LambdaExecutionRole:
-    Type: 'AWS::IAM::Role'
+    Type: "AWS::IAM::Role"
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
               Service: lambda.amazonaws.com
-            Action: 'sts:AssumeRole'
+            Action: "sts:AssumeRole"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AWSLambdaExecute
         - !Ref CloudWatchLogsPolicy
       Policies:
-        - PolicyName: 'LambdaCustomPolicy'
+        - PolicyName: "LambdaCustomPolicy"
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
-                  - 'sqs:SendMessage'
+                  - "sqs:SendMessage"
                 Resource: !GetAtt ActionCallDLQ.Arn
 
   # IAM Managed Policy for Lambda Invocation
   LambdaInvokePolicy:
-    Type: 'AWS::IAM::ManagedPolicy'
+    Type: "AWS::IAM::ManagedPolicy"
     Properties:
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Action:
-              - 'lambda:InvokeFunction'
-            Resource: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:ActionCall-${AWS::AccountId}'
+              - "lambda:InvokeFunction"
+            Resource: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:ActionCall-${AWS::AccountId}"
 
   # IAM Role for Bedrock Agent
   BedrockAgentExecutionRole:
-    Type: 'AWS::IAM::Role'
+    Type: "AWS::IAM::Role"
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
               Service: bedrock.amazonaws.com
-            Action: 'sts:AssumeRole'
+            Action: "sts:AssumeRole"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonBedrockFullAccess
         - !Ref LambdaInvokePolicy
 
   # SQS Queue for Dead Letter Queue (DLQ)
   ActionCallDLQ:
-    Type: 'AWS::SQS::Queue'
+    Type: "AWS::SQS::Queue"
     Properties:
       QueueName: !Sub "ActionCallDLQ-${AWS::AccountId}-${AWS::Region}"
 
   # Lambda Function for Action Call
   ActionCall:
-    Type: 'AWS::Lambda::Function'
+    Type: "AWS::Lambda::Function"
     Properties:
-      FunctionName: !Sub 'ActionCall-${AWS::AccountId}'
+      FunctionName: !Sub "ActionCall-${AWS::AccountId}"
       Handler: index.lambda_handler
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: python3.12
@@ -123,7 +123,7 @@ Resources:
               def get_named_parameter(event, name):
                   return next(item for item in event['parameters'] if item['name'] == name)['value']
               
-          
+
               def companyResearch(event):
                   companyName = get_named_parameter(event, 'name').lower()
                   print("NAME PRINTED: ", companyName)
@@ -145,7 +145,7 @@ Resources:
                   top_companies = sorted_companies[:numCompanies]
                   return top_companies
 
-          
+
               def sendEmail(event, company_data):
                   emailAddress = get_named_parameter(event, 'emailAddress')
                   fomcSummary = get_named_parameter(event, 'fomcSummary')
@@ -199,23 +199,23 @@ Resources:
 
   # Lambda Permission for Bedrock to Invoke Lambda
   LambdaInvokePermission:
-    Type: 'AWS::Lambda::Permission'
+    Type: "AWS::Lambda::Permission"
     DependsOn: ActionCall
     Properties:
       FunctionName: !GetAtt ActionCall.Arn
-      Action: 'lambda:InvokeFunction'
-      Principal: 'bedrock.amazonaws.com'
-      SourceArn: !Sub 'arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:agent/*'
+      Action: "lambda:InvokeFunction"
+      Principal: "bedrock.amazonaws.com"
+      SourceArn: !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:agent/*"
 
   # Bedrock Agent Resource
   BedrockAgent:
     Type: "AWS::Bedrock::Agent"
     DependsOn: LambdaInvokePermission
     Properties:
-      AgentName: !Sub 'PortfolioCreator-${AWS::AccountId}'
+      AgentName: !Sub "Legalese-${AWS::AccountId}"
       AgentResourceRoleArn: !GetAtt BedrockAgentExecutionRole.Arn
-      AutoPrepare: 'True'
-      FoundationModel: 'anthropic.claude-3-haiku-20240307-v1:0'
+      AutoPrepare: "True"
+      FoundationModel: "anthropic.claude-3-haiku-20240307-v1:0"
       Instruction: |
         You are an investment analyst. Your job is to assist in investment analysis, create research summaries, generate profitable company portfolios, and facilitate communication through emails. Here is how I want you to think step by step:
 
@@ -230,20 +230,20 @@ Resources:
         3. Email Communication:
             Using the email template provided, format an email that includes the newly created company portfolio and any summaries of important documents.
             Utilize the provided tools to send an email upon request, That includes a summary of provided responses and portfolios created.
-            
+
       Description: "Generative AI Investment Analyst Tool for creating portfolios and summarizing documents."
       IdleSessionTTLInSeconds: 900
       ActionGroups:
-        - ActionGroupName: "PortfolioCreator-actions"
+        - ActionGroupName: "Legalese-actions"
           Description: "This action group is used to query information about customers and procedures."
           ActionGroupExecutor:
-            Lambda: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:ActionCall-${AWS::AccountId}'
+            Lambda: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:ActionCall-${AWS::AccountId}"
           ApiSchema:
             Payload: |
               {
                 "openapi": "3.0.1",
                 "info": {
-                  "title": "PortfolioCreatorAssistant API",
+                  "title": "LegaleseAssistant API",
                   "description": "API for creating a company portfolio, search company data, and send summarized emails",
                   "version": "1.0.0"
                 },
@@ -492,7 +492,7 @@ Resources:
               }
             InferenceConfiguration:
               MaximumLength: 2048
-              StopSequences: [ "</invoke>", "</answer>", "</error>" ]
+              StopSequences: ["</invoke>", "</answer>", "</error>"]
               Temperature: 0
               TopK: 250
               TopP: 1
@@ -503,20 +503,19 @@ Resources:
 
   # Bedrock Agent Alias Resource
   BedrockAgentAlias:
-    Type: 'AWS::Bedrock::AgentAlias'
+    Type: "AWS::Bedrock::AgentAlias"
     DependsOn: BedrockAgent
     Properties:
-      AgentAliasName: !Sub 'Alias-1'
+      AgentAliasName: !Sub "Alias-1"
       AgentId: !GetAtt BedrockAgent.AgentId
 
 Outputs:
   BedrockAgentName:
-    Description: 'Name of the Bedrock Agent created'
+    Description: "Name of the Bedrock Agent created"
     Value: !Ref BedrockAgent
   BedrockAgentAliasName:
-    Description: 'Name of the Bedrock Agent Alias created'
+    Description: "Name of the Bedrock Agent Alias created"
     Value: !Ref BedrockAgentAlias
   ActionCallArn:
-    Description: 'ARN of the invoke Lambda function'
+    Description: "ARN of the invoke Lambda function"
     Value: !GetAtt ActionCall.Arn
-

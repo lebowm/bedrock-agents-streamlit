@@ -72,7 +72,7 @@ Resources:
           bucket_name = os.environ['BUCKET_NAME']
 
           def handler(event, context):
-              url = "https://github.com/lebowm/bedrock-agents-streamlit/S3docs/main.zip"
+              url = "https://github.com/lebowm/bedrock-agents-streamlit/blob/main/S3docs/main.zip"
               with tempfile.TemporaryDirectory() as tmpdir:
                   local_zip_path = os.path.join(tmpdir, 'main.zip')
                   

@@ -125,7 +125,7 @@ Alternatively, this README will walk you through the step-by-step process to set
 
 ### Step 3: Lambda Function Configuration
 
-- Create a Lambda function (Python 3.12) for the Bedrock agent's action group. We will call this Lambda function `PortfolioCreator-actions`.
+- Create a Lambda function (Python 3.12) for the Bedrock agent's action group. We will call this Lambda function `Legalese-actions`.
 
 ![Create Function](images/create_function.png)
 
@@ -278,7 +278,7 @@ def lambda_handler(event, context):
 
 ### Step 4: Setup Bedrock Agent and Action Group
 
-- Navigate to the Bedrock console. Go to the toggle on the left, and under **_Builder tools_** select **_Agents_**. Provide an agent name, like **_PortfolioCreator_** then create the agent.
+- Navigate to the Bedrock console. Go to the toggle on the left, and under **_Builder tools_** select **_Agents_**. Provide an agent name, like **_Legalese_** then create the agent.
 
 - The agent description is optional, and we will use the default new service role. For the model, select **Anthropic: Claude 3 Haiku**. Next, provide the following instruction for the agent:
 
@@ -304,7 +304,7 @@ You are an investment analyst. Your job is to assist in investment analysis, cre
 
 - Next, we will add an action group. Scroll down to `Action groups` then select **_Add_**.
 
-- Call the action group `PortfolioCreator-actions`. We will set the `Action group type` to **_Define with API schemas_**. `Action group invocations` should be set to **_select an existing Lambda function_**. For the Lambda function, select `PortfolioCreator-actions`.
+- Call the action group `Legalese-actions`. We will set the `Action group type` to **_Define with API schemas_**. `Action group invocations` should be set to **_select an existing Lambda function_**. For the Lambda function, select `Legalese-actions`.
 
 - For the `Action group Schema`, we will choose **_Define via in-line schema editor_**. Replace the default schema in the **In-line OpenAPI schema** editor with the schema provided below. You can also retrieve the schema from the repo [here](https://github.com/build-on-aws/bedrock-agent-txt2sql/blob/main/schema/athena-schema.json). After, select **_Add_**.
   `(This API schema is needed so that the bedrock agent knows the format structure and parameters needed for the action group to interact with the Lambda function.)`
@@ -313,7 +313,7 @@ You are an investment analyst. Your job is to assist in investment analysis, cre
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "PortfolioCreatorAssistant API",
+    "title": "LegaleseAssistant API",
     "description": "API for creating a company portfolio, search company data, and send summarized emails",
     "version": "1.0.0"
   },
@@ -715,7 +715,7 @@ After completing the setup and testing of the Bedrock Agent and Streamlit app, f
 2. Remove Lambda Function:
 
 - Go to the Lambda console.
-- Select the "PortfolioCreator-actions" function.
+- Select the "Legalese-actions" function.
 - Click 'Delete' and confirm the action.
 
 3. Delete Bedrock Agent:
