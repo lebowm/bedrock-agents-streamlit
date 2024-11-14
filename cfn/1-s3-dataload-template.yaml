@@ -1,5 +1,5 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Description: 'CloudFormation template that creates an s3 bucket, then loads data'
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "CloudFormation template that creates an s3 bucket, then loads data"
 
 Parameters:
   Alias:
@@ -11,14 +11,14 @@ Resources:
   KnowledgeBaseBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub 'knowledgebase-bedrock-agent-${Alias}'
+      BucketName: !Sub "knowledgebase-bedrock-agent-${Alias}"
 
   # IAM Role for Lambda Execution
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -27,15 +27,15 @@ Resources:
       Policies:
         - PolicyName: LambdaS3Policy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: "2012-10-17"
             Statement:
               - Effect: Allow
                 Action:
                   - s3:PutObject
                   - s3:ListBucket
                 Resource:
-                  - !Sub 'arn:aws:s3:::knowledgebase-bedrock-agent-${Alias}'
-                  - !Sub 'arn:aws:s3:::knowledgebase-bedrock-agent-${Alias}/*'
+                  - !Sub "arn:aws:s3:::knowledgebase-bedrock-agent-${Alias}"
+                  - !Sub "arn:aws:s3:::knowledgebase-bedrock-agent-${Alias}/*"
               - Effect: Allow
                 Action:
                   - logs:CreateLogGroup
@@ -45,13 +45,13 @@ Resources:
               - Effect: Allow
                 Action:
                   - lambda:InvokeFunction
-                Resource: !Sub 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:GitHubToS3Lambda-${Alias}'
+                Resource: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:GitHubToS3Lambda-${Alias}"
 
   # GitHubToS3 Lambda Function
   GitHubToS3Lambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub 'GitHubToS3Lambda-${Alias}'
+      FunctionName: !Sub "GitHubToS3Lambda-${Alias}"
       Handler: index.handler
       Runtime: python3.12
       Role: !GetAtt LambdaExecutionRole.Arn
@@ -72,7 +72,7 @@ Resources:
           bucket_name = os.environ['BUCKET_NAME']
 
           def handler(event, context):
-              url = "https://github.com/build-on-aws/bedrock-agents-streamlit/archive/refs/heads/main.zip"
+              url = "https://github.com/lebowm/bedrock-agents-streamlit/S3docs/main.zip"
               with tempfile.TemporaryDirectory() as tmpdir:
                   local_zip_path = os.path.join(tmpdir, 'main.zip')
                   
@@ -96,7 +96,7 @@ Resources:
   InvokeGitHubToS3Lambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub 'InvokeGitHubToS3Lambda-${Alias}'
+      FunctionName: !Sub "InvokeGitHubToS3Lambda-${Alias}"
       Handler: index.handler
       Runtime: python3.12
       Role: !GetAtt LambdaExecutionRole.Arn
