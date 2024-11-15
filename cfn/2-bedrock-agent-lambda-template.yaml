@@ -231,7 +231,7 @@ Resources:
             Using the email template provided, format an email that includes the newly created company portfolio and any summaries of important documents.
             Utilize the provided tools to send an email upon request, That includes a summary of provided responses and portfolios created.
 
-      Description: "Generative AI Investment Analyst Tool for creating portfolios and summarizing documents."
+      Description: "Generative AI Legal Review Tool for summarizing documents."
       IdleSessionTTLInSeconds: 900
       ActionGroups:
         - ActionGroupName: "Legalese-actions"
